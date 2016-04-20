@@ -1,10 +1,20 @@
-//"message":{"message_id":3,"from":{"id":191069934,"first_name":"Philip","last_name":"Smith"},"chat":{"id":191069934,"first_name":"Philip","last_name":"Smith","type":"private"},"date":1461109451,"text":"Hsjdl"}}]}
-var bot = require('telegram-bot-bootstrap');
-var fs = require('fs');
-var chat = 191069934; //replace this with your chat id noted previously 
-var text="this is my sample test"; //replace this with your message
-var token = "217736145:AAGHjRNRwjIfEYxesCsU_NuhJo01EJTebAo"; //replace token with the token given by botfather
-var Alice = new bot(token);
-Alice.getUpdates().then(console.log) // you'll see an update message. Look for your user_id in "message.from.id"
-// Once you get your id to message yourself, you may:
-Alice.sendMessage(chat, text) // you'll receive a message from Alice..then(console.log)// ? optional, will log the successful message sent over HTTP
+var TelegramBot = require('node-telegram-bot-api');
+
+var token = "217736145:AAGHjRNRwjIfEYxesCsU_NuhJo01EJTebAo";
+// Setup polling way
+var bot = new TelegramBot(token, {polling: true});
+
+// Matches /echo [whatever]
+bot.onText(/\/echo (.+)/, function (msg, match) {
+  var fromId = msg.from.id;
+  var resp = match[1];
+  bot.sendMessage(fromId, resp);
+});
+
+// Any kind of message
+bot.on('message', function (msg) {
+  var chatId = msg.chat.id;
+  // photo can be: a file path, a stream or a Telegram file_id
+  var photo = 'cats.png';
+  bot.sendPhoto(chatId, photo, {caption: 'Lovely kittens'});
+});
