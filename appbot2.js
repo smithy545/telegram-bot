@@ -1,14 +1,14 @@
 var fs = require('fs');
 var TelegramBot = require("node-telegram-bot-api");
 
-var token = "217736145:AAGHjRNRwjIfEYxesCsU_NuhJo01EJTebAo";
+var token = "212904367:AAH9BIRY_vE4LTegCO3fLPFYxc2WFVTgkxg";
 // Setup polling way
 var bot = new TelegramBot(token, {polling: {timeout:10, interval:100}});
-var commands = /(\/help)(\/reset)/;
+var commands = /(\/help)|(\/reset)|(\/end)|(\/start)/;
 
 var db = JSON.parse(fs.readFileSync('./storage.txt'));
 
-var unanswered = ["whats up", "thats cool", "whats your name"];
+var unanswered = ["How are you?", "What's up", "Where are you from?", "What's your name?", "What do you like to do?"];
 var asking = {};
 
 // Matches /help
@@ -17,11 +17,17 @@ bot.onText(/\/help/, function(msg, match) {
 	bot.sendMessage(msg.chat.id, helpList);
 });
 
-//Matches /reset
+// Matches /reset
 bot.onText(/\/reset/, function(msg, match) {
-	db = {'hi':{total:1, answers:{'hi':1}}};
+	//db = {'hi':{total:1, answers:{'hi':1}}};
 	unanswered = ["whats up", "thats cool", "whats your name"];
 	bot.sendMessage(msg.chat.id, "Bot memory reset to basic.");
+});
+
+// Matches /end
+bot.onText(/\/end/, function(msg, match) {
+	asking[msg.chat.id] = undefined;
+	bot.sendMessage(msg.chat.id, "Conversation ended.");
 });
 
 // Any kind of message
@@ -31,14 +37,15 @@ bot.on('message', function (msg) {
 	}
 
 	var q = clean(msg.text);
+	var qdirty = msg.text;
 	var resp;
 
 	if(asking[msg.chat.id] != undefined) {
 		if(db[asking[msg.chat.id]] != undefined) {
-			if(db[asking[msg.chat.id]].answers[q]) {
-				db[asking[msg.chat.id]].answers[q]++;
+			if(db[asking[msg.chat.id]].answers[qdirty]) {
+				db[asking[msg.chat.id]].answers[qdirty]++;
 			} else {
-				db[asking[msg.chat.id]].answers[q] = 1;
+				db[asking[msg.chat.id]].answers[qdirty] = 1;
 			}
 			db[asking[msg.chat.id]].total++;
 		} else {
@@ -46,25 +53,27 @@ bot.on('message', function (msg) {
 				answers: {},
 				total: 1
 			};
-			db[asking[msg.chat.id]].answers[q] = 1;
+			db[asking[msg.chat.id]].answers[qdirty] = 1;
 		}
 	}
 	if(db[q] != undefined) {
 		resp = pickFrom(db[q]);
-		asking[msg.chat.id] = resp;
+		asking[msg.chat.id] = clean(resp);
 		unanswered.push(resp);
 	} else{
-		resp = unanswered.pop();
-		asking[msg.chat.id] = resp;
-		unanswered.push(q);
+		resp = unanswered.splice(Math.floor(Math.random()*unanswered.length), 1)[0];
+		asking[msg.chat.id] = clean(resp);
+		unanswered.push(qdirty);
 	}
+
+	console.log(unanswered);
 
 	bot.sendMessage(msg.chat.id, resp);
 });
 
 
 function clean(word) {
-	return word.toLowerCase();
+	return word.toLowerCase().replace(/[^a-zA-Z0-9 ]/,'');
 }
 
 function pickFrom(question) {
