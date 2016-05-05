@@ -8,7 +8,7 @@ var commands = /(\/help)|(\/reset)|(\/end)|(\/start)/;
 
 var db = JSON.parse(fs.readFileSync('./storage.txt'));
 
-var unanswered = ["How are you?", "What's up", "Where are you from?", "What's your name?", "What do you like to do?"];
+var unanswered = ["How are you?", "What's up", "Where are you from?", "What's your name?", "What do you like to do?", "Who has been the biggest influence in your life?", "What kinds of things really make you laugh?", "What's your favorite place in the entire world?", "What's your favorite movie of all time?"];
 var asking = {};
 
 // Matches /help
@@ -20,7 +20,7 @@ bot.onText(/\/help/, function(msg, match) {
 // Matches /reset
 bot.onText(/\/reset/, function(msg, match) {
 	//db = {'hi':{total:1, answers:{'hi':1}}};
-	unanswered = ["whats up", "thats cool", "whats your name"];
+	unanswered = ["How are you?", "What's up", "Where are you from?", "What's your name?", "What do you like to do?", "Who has been the biggest influence in your life?", "What kinds of things really make you laugh?", "What's your favorite place in the entire world?", "What's your favorite movie of all time?"];
 	bot.sendMessage(msg.chat.id, "Bot memory reset to basic.");
 });
 
@@ -91,6 +91,29 @@ function pickFrom(question) {
 	}
 
 	return -1;
+}
+
+function absorbFile(filename, db) {
+	info = fs.readFileSync(filename).replace(/\r/, '').split('\n');
+	for(var i = 0; i < info.length - 1; i++) {
+		if(info[i] != '') {
+			var line = clean(info[i]);
+			var next = info[i+1];
+			if(db[line] != undefined) {
+				if(db[line].answers[next] != undefined) {
+					db[line].answers[next]++;
+				} else {
+					db[line].answers[next] = 1;
+				}
+			} else {
+				db[line] = {
+					answers: {},
+					total: 1
+				};
+				db[line].answers[next] = 1;
+			}
+		}
+	}
 }
 
 setInterval(function() {

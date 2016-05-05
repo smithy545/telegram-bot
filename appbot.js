@@ -25,7 +25,6 @@ bot.on('message', function (msg) {
 		return console.log(msg.text);
 	}
 
-	console.log(msg.text);
 	var words = msg.text.split(/\s+/);
 
 	chain = chainInput([msg.text], chain);
@@ -150,10 +149,7 @@ function readChain(seed, chain) {
 	var outmax = 2*(seed.split(/\s+/).length + 1);
 	seed = clean(seed);
 
-	console.log(chain[seed]);
-
 	if(Object.keys(chain[seed].next).length > 1) {
-		console.log("next checking");
 		var freq = getFrequencies(chain[seed].next, chain[seed].nextCount);
 		var total = 0;
 		while(out.length < outmax && (cur != "" || out.length == 0)) {
@@ -171,7 +167,6 @@ function readChain(seed, chain) {
 	}
 
 	if (Object.keys(chain[seed].next).length > 1) {
-		console.log("prev checking");
 		var freq = getFrequencies(chain[seed].prev, chain[seed].prevCount);
 		var total = 0;
 		cur = -1;
@@ -190,7 +185,6 @@ function readChain(seed, chain) {
 	}
 
 	if (Object.keys(chain[seed].next).length <= 1 && Object.keys(chain[seed].next).length <= 1){
-		console.log("random checking");
 		var counts = {};
 		var total = 0;
 		for(i in chain) {
@@ -209,6 +203,10 @@ function readChain(seed, chain) {
 			}
 		}
 		out.push(cur);
+	}
+
+	if(out.length == 0) {
+		out.push("Meh");
 	}
 
 	return out.join(" ");
