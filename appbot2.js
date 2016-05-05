@@ -4,13 +4,25 @@ var TelegramBot = require("node-telegram-bot-api");
 var token = "217736145:AAGHjRNRwjIfEYxesCsU_NuhJo01EJTebAo";
 // Setup polling way
 var bot = new TelegramBot(token, {polling: {timeout:10, interval:100}});
-var commands = /(\/help)/;
+var commands = /(\/help)(\/reset)/;
 
-var contents = fs.readFileSync('./pg1342.txt', 'utf-8');
+var db = JSON.parse(fs.readFileSync('./storage.txt'));
 
-var db = {'hi':{total:1, answers:{'hi':1}}};
-var unanswered = ["whats up"];
+var unanswered = ["whats up", "thats cool", "whats your name"];
 var asking = {};
+
+// Matches /help
+bot.onText(/\/help/, function(msg, match) {
+	var helpList = "Talk to me brah";
+	bot.sendMessage(msg.chat.id, helpList);
+});
+
+//Matches /reset
+bot.onText(/\/reset/, function(msg, match) {
+	db = {'hi':{total:1, answers:{'hi':1}}};
+	unanswered = ["whats up", "thats cool", "whats your name"];
+	bot.sendMessage(msg.chat.id, "Bot memory reset to basic.");
+});
 
 // Any kind of message
 bot.on('message', function (msg) {
@@ -47,9 +59,6 @@ bot.on('message', function (msg) {
 		unanswered.push(q);
 	}
 
-	console.log(db);
-	console.log(unanswered);
-
 	bot.sendMessage(msg.chat.id, resp);
 });
 
@@ -74,3 +83,7 @@ function pickFrom(question) {
 
 	return -1;
 }
+
+setInterval(function() {
+	fs.writeFile('./storage.txt', JSON.stringify(db));
+}, 10000);
