@@ -13,6 +13,7 @@ var asking = {};
 
 absorbFile('./clean_texts.txt', db);
 
+/*
 // Matches /help
 bot.onText(/\/help/, function(msg, match) {
 	var helpList = "Talk to me brah";
@@ -25,7 +26,7 @@ bot.onText(/\/reset/, function(msg, match) {
 	unanswered = ["How are you?", "What's up", "Where are you from?", "What's your name?", "What do you like to do?", "Who has been the biggest influence in your life?", "What kinds of things really make you laugh?", "What's your favorite place in the entire world?", "What's your favorite movie of all time?"];
 	bot.sendMessage(msg.chat.id, "Bot memory reset to basic.");
 });
-
+*/
 // Matches /end
 bot.onText(/\/end/, function(msg, match) {
 	asking[msg.chat.id] = undefined;
@@ -40,11 +41,12 @@ bot.onText(/\/skip/, function(msg, match) {
 	bot.sendMessage(msg.chat.id, resp);
 });
 
+/*
 // Matches /seed
 bot.onText(/\/seed/, function(msg, match) {
 	bot.sendMessage(msg.chat.id, "not set");
 });
-
+*/
 // Any kind of message
 bot.on('message', function (msg) {
 	if(commands.test(msg.text)) {
