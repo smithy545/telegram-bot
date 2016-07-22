@@ -1,41 +1,44 @@
 'use strict'
 
 var token = "217736145:AAGHjRNRwjIfEYxesCsU_NuhJo01EJTebAo";
-
 var tg = require('telegram-node-bot')(token)
 
 tg.router.
-    when(['ping'], 'PingController').
     otherwise('OtherwiseController')
-
-tg.controller('PingController', ($) => {
-    tg.for('ping', () => {
-        $.sendMessage('pong')
-    })
-})
 
 tg.controller('OtherwiseController', ($) => {
 	$.sendMessage($.message.text);
 });
 
 tg.inlineMode(($) => {
-	console.log($);
-	results = [{
+	var usernames = $.query.split(' ');
+	console.log(usernames);
+
+	var results = [{
 	}];
 	$.answer([{text: 'test'}]);
 });
+
+var chats = [];
 
 function quotify(s) {
 	return '"' + s + '"';
 }
 
 function postscript(s) {
-	ps = " ";
+	var psList = [
+	"That's you. That's what you sound like.",
+	];
+	var ps = " ";
 	return s + ps;
 }
 
+function quote(username, s) {
+	return s + "\n-" + username + "\n-Mock_bot"
+}
+
 function emojify(s) {
-	s.split(/\s+/);
+	words = s.split(/\s+/);
 	return s;
 }
 
